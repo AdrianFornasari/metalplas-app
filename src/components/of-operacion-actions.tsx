@@ -79,11 +79,7 @@ export default function OfOperacionActions({
         )}
       </div>
 
-      {error && (
-        <div className="max-w-xs text-xs text-red-600">
-          {error}
-        </div>
-      )}
+      {error && <div className="max-w-xs text-xs text-red-600">{error}</div>}
     </div>
   )
 }

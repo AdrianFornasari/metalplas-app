@@ -1,7 +1,7 @@
-import OfOperacionActions from '@/components/of-operacion-actions'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import OfOperacionActions from '@/components/of-operacion-actions'
 
 type Profile = {
   id: string
@@ -121,8 +121,8 @@ export default async function SupervisorDashboardPage() {
                 <th className="text-left py-2 pr-4">Estado</th>
                 <th className="text-left py-2 pr-4">Asignado a</th>
                 <th className="text-left py-2 pr-4">Inicio</th>
-				<th className="text-left py-2 pr-4">Acciones</th>
                 <th className="text-left py-2 pr-4">Fin</th>
+                <th className="text-left py-2 pr-4">Acciones</th>
               </tr>
             </thead>
             <tbody>
@@ -143,12 +143,12 @@ export default async function SupervisorDashboardPage() {
                   <td className="py-2 pr-4">{row.persona_nombre ?? '-'}</td>
                   <td className="py-2 pr-4">{row.fecha_inicio ?? '-'}</td>
                   <td className="py-2 pr-4">{row.fecha_fin ?? '-'}</td>
-				  <td className="py-2 pr-4">
-					<OfOperacionActions
-					  ofOperacionId={row.of_operacion_id}
-					  estadoCodigo={row.estado_codigo}
-					/>
-				  </td>
+                  <td className="py-2 pr-4">
+                    <OfOperacionActions
+                      ofOperacionId={row.of_operacion_id}
+                      estadoCodigo={row.estado_codigo}
+                    />
+                  </td>
                 </tr>
               ))}
 
