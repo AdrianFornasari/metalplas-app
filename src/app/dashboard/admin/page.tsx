@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import OfOperacionActions from '@/components/of-operacion-actions'
+import DashboardRowsTable from '@/components/dashboard-rows-table'
 
 type Profile = {
   id: string
@@ -97,6 +97,18 @@ export default async function AdminDashboardPage() {
           <Link href="/dashboard" className="rounded-lg border px-4 py-2">
             Dashboard
           </Link>
+          <Link
+            href="/dashboard/admin/asignar"
+            className="rounded-lg border px-4 py-2"
+          >
+            Asignar
+          </Link>
+          <Link
+            href="/dashboard/admin/of/nueva"
+            className="rounded-lg border px-4 py-2"
+          >
+            Nueva OF
+          </Link>
         </div>
       </div>
 
@@ -106,63 +118,14 @@ export default async function AdminDashboardPage() {
         </div>
       )}
 
-      <section className="rounded-2xl border p-4">
-        <h2 className="text-lg font-semibold mb-3">Operaciones cargadas</h2>
-
-        <div className="overflow-x-auto">
-          <table className="min-w-full border-collapse text-sm">
-            <thead>
-              <tr className="border-b">
-                <th className="text-left py-2 pr-4">OF</th>
-                <th className="text-left py-2 pr-4">Cliente</th>
-                <th className="text-left py-2 pr-4">Orden</th>
-                <th className="text-left py-2 pr-4">Operación</th>
-                <th className="text-left py-2 pr-4">Variante</th>
-                <th className="text-left py-2 pr-4">Estado</th>
-                <th className="text-left py-2 pr-4">Asignado a</th>
-                <th className="text-left py-2 pr-4">Inicio</th>
-                <th className="text-left py-2 pr-4">Fin</th>
-                <th className="text-left py-2 pr-4">Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {(rows as PanelRow[] | null)?.map((row) => (
-                <tr key={row.of_operacion_id} className="border-b align-top">
-                  <td className="py-2 pr-4">{row.codigo_of}</td>
-                  <td className="py-2 pr-4">{row.cliente}</td>
-                  <td className="py-2 pr-4">{row.orden_operacion}</td>
-                  <td className="py-2 pr-4">
-                    {row.codigo_operacion} - {row.descripcion_operacion}
-                  </td>
-                  <td className="py-2 pr-4">
-                    {row.codigo_variante
-                      ? `${row.codigo_variante} - ${row.descripcion_variante ?? ''}`
-                      : '-'}
-                  </td>
-                  <td className="py-2 pr-4">{row.estado_nombre}</td>
-                  <td className="py-2 pr-4">{row.persona_nombre ?? '-'}</td>
-                  <td className="py-2 pr-4">{row.fecha_inicio ?? '-'}</td>
-                  <td className="py-2 pr-4">{row.fecha_fin ?? '-'}</td>
-                  <td className="py-2 pr-4">
-                    <OfOperacionActions
-                      ofOperacionId={row.of_operacion_id}
-                      estadoCodigo={row.estado_codigo}
-                    />
-                  </td>
-                </tr>
-              ))}
-
-              {!rowsError && (!rows || rows.length === 0) && (
-                <tr>
-                  <td colSpan={10} className="py-4 text-center text-gray-500">
-                    No hay datos para mostrar.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </section>
+      {!rowsError && (
+        <DashboardRowsTable
+          rows={(rows as PanelRow[] | null) ?? []}
+          titulo="Operaciones cargadas"
+          mostrarAsignadoA={true}
+          mensajeVacio="No hay datos para mostrar."
+        />
+      )}
     </main>
   )
 }

@@ -1,0 +1,19 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Abrir Chrome en localhost:3000",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:3000",
+      "webRoot": "${workspaceFolder}"
+    },
+    {
+      "name": "Abrir Chrome en IP local:3000",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://192.168.68.55:3000",
+      "webRoot": "${workspaceFolder}"
+    }
+  ]
+}

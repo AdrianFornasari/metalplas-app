@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import OfOperacionActions from '@/components/of-operacion-actions'
+import SupervisorMobileBoard from '@/components/supervisor-mobile-board'
 
 type Profile = {
   id: string
@@ -28,6 +28,7 @@ type PanelRow = {
   persona_nombre: string | null
   fecha_inicio: string | null
   fecha_fin: string | null
+  tiempo_acumulado_segundos: number | null
 }
 
 export default async function SupervisorDashboardPage() {
@@ -74,95 +75,48 @@ export default async function SupervisorDashboardPage() {
       codigo_persona,
       persona_nombre,
       fecha_inicio,
-      fecha_fin
+      fecha_fin,
+      tiempo_acumulado_segundos
     `)
     .order('codigo_of', { ascending: true })
     .order('orden_operacion', { ascending: true })
     .limit(100)
 
   return (
-    <main className="p-6 space-y-6">
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-semibold">Panel supervisor</h1>
-          <p className="text-sm text-gray-600">
-            {profile.full_name ?? profile.email} — rol: {profile.role}
-          </p>
-        </div>
+    <main className="p-4 space-y-4 sm:p-6">
+      <div className="flex flex-col gap-3 rounded-2xl border border-gray-300 bg-white p-4 text-gray-900">
+  <div>
+    <h1 className="text-2xl font-semibold text-gray-900">Panel supervisor</h1>
+    <p className="text-sm text-gray-700">
+      {profile.full_name ?? profile.email}
+    </p>
+  </div>
 
-        <div className="flex gap-3">
-          <Link href="/" className="rounded-lg border px-4 py-2">
-            Inicio
-          </Link>
-          <Link href="/dashboard" className="rounded-lg border px-4 py-2">
-            Dashboard
-          </Link>
-        </div>
-      </div>
+  <div className="flex gap-3">
+    <Link
+      href="/"
+      className="rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900"
+    >
+      Inicio
+    </Link>
+    <Link
+      href="/dashboard"
+      className="rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900"
+    >
+      Dashboard
+    </Link>
+  </div>
+</div>
 
       {rowsError && (
-        <div className="rounded-lg border border-red-300 bg-red-50 p-4 text-red-700">
+        <div className="rounded-2xl border border-red-300 bg-red-50 p-4 text-red-700">
           Error cargando datos: {rowsError.message}
         </div>
       )}
 
-      <section className="rounded-2xl border p-4">
-        <h2 className="text-lg font-semibold mb-3">Operaciones visibles</h2>
-
-        <div className="overflow-x-auto">
-          <table className="min-w-full border-collapse text-sm">
-            <thead>
-              <tr className="border-b">
-                <th className="text-left py-2 pr-4">OF</th>
-                <th className="text-left py-2 pr-4">Cliente</th>
-                <th className="text-left py-2 pr-4">Orden</th>
-                <th className="text-left py-2 pr-4">Operación</th>
-                <th className="text-left py-2 pr-4">Variante</th>
-                <th className="text-left py-2 pr-4">Estado</th>
-                <th className="text-left py-2 pr-4">Asignado a</th>
-                <th className="text-left py-2 pr-4">Inicio</th>
-                <th className="text-left py-2 pr-4">Fin</th>
-                <th className="text-left py-2 pr-4">Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {(rows as PanelRow[] | null)?.map((row) => (
-                <tr key={row.of_operacion_id} className="border-b align-top">
-                  <td className="py-2 pr-4">{row.codigo_of}</td>
-                  <td className="py-2 pr-4">{row.cliente}</td>
-                  <td className="py-2 pr-4">{row.orden_operacion}</td>
-                  <td className="py-2 pr-4">
-                    {row.codigo_operacion} - {row.descripcion_operacion}
-                  </td>
-                  <td className="py-2 pr-4">
-                    {row.codigo_variante
-                      ? `${row.codigo_variante} - ${row.descripcion_variante ?? ''}`
-                      : '-'}
-                  </td>
-                  <td className="py-2 pr-4">{row.estado_nombre}</td>
-                  <td className="py-2 pr-4">{row.persona_nombre ?? '-'}</td>
-                  <td className="py-2 pr-4">{row.fecha_inicio ?? '-'}</td>
-                  <td className="py-2 pr-4">{row.fecha_fin ?? '-'}</td>
-                  <td className="py-2 pr-4">
-                    <OfOperacionActions
-                      ofOperacionId={row.of_operacion_id}
-                      estadoCodigo={row.estado_codigo}
-                    />
-                  </td>
-                </tr>
-              ))}
-
-              {!rowsError && (!rows || rows.length === 0) && (
-                <tr>
-                  <td colSpan={10} className="py-4 text-center text-gray-500">
-                    No hay datos para mostrar.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </section>
+      {!rowsError && (
+        <SupervisorMobileBoard rows={(rows as PanelRow[] | null) ?? []} />
+      )}
     </main>
   )
 }

@@ -9,7 +9,7 @@ type Props = {
   estadoCodigo: number
 }
 
-export default function OfOperacionActions({
+export default function OfOperacionActionsMobile({
   ofOperacionId,
   estadoCodigo,
 }: Props) {
@@ -18,7 +18,6 @@ export default function OfOperacionActions({
 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [observaciones, setObservaciones] = useState('')
 
   async function handleIniciar() {
     setLoading(true)
@@ -62,7 +61,7 @@ export default function OfOperacionActions({
 
     const { error } = await supabase.rpc('rpc_suspender_of_operacion', {
       p_of_operacion_id: ofOperacionId,
-      p_observaciones: observaciones.trim() || null,
+      p_observaciones: null,
     })
 
     setLoading(false)
@@ -72,7 +71,6 @@ export default function OfOperacionActions({
       return
     }
 
-    setObservaciones('')
     router.refresh()
   }
 
@@ -80,52 +78,43 @@ export default function OfOperacionActions({
   const puedeFinalizarOSuspender = estadoCodigo === 3
 
   return (
-    <div className="space-y-2">
-      {puedeFinalizarOSuspender && (
-        <textarea
-          className="w-full min-w-[180px] rounded-lg border px-3 py-2 text-xs"
-          rows={2}
-          placeholder="Observaciones para suspender (opcional)"
-          value={observaciones}
-          onChange={(e) => setObservaciones(e.target.value)}
+    <div className="space-y-3">
+      {puedeIniciar && (
+        <button
+          onClick={handleIniciar}
           disabled={loading}
-        />
+          className="w-full rounded-xl border border-emerald-700 bg-emerald-600 px-4 py-4 text-base font-semibold text-white active:scale-[0.99]"
+        >
+          {loading ? 'Procesando...' : 'Iniciar'}
+        </button>
       )}
 
-      <div className="flex flex-wrap gap-2">
-        {puedeIniciar && (
+      {puedeFinalizarOSuspender && (
+        <div className="grid grid-cols-2 gap-3">
           <button
-            onClick={handleIniciar}
+            onClick={handleSuspender}
             disabled={loading}
-            className="rounded-lg border px-3 py-1"
+            className="w-full rounded-xl border border-yellow-500 bg-yellow-300 px-4 py-4 text-base font-semibold text-gray-900 active:scale-[0.99]"
           >
-            {loading ? 'Procesando...' : 'Iniciar'}
+            {loading ? 'Procesando...' : 'Suspender'}
           </button>
-        )}
 
-        {puedeFinalizarOSuspender && (
-          <>
-            <button
-              onClick={handleFinalizar}
-              disabled={loading}
-              className="rounded-lg border px-3 py-1"
-            >
-              {loading ? 'Procesando...' : 'Finalizar'}
-            </button>
+          <button
+            onClick={handleFinalizar}
+            disabled={loading}
+            className="w-full rounded-xl border border-red-700 bg-red-600 px-4 py-4 text-base font-semibold text-white active:scale-[0.99]"
+          >
+            {loading ? 'Procesando...' : 'Finalizar'}
+          </button>
+        </div>
+      )}
 
-            <button
-              onClick={handleSuspender}
-              disabled={loading}
-              className="rounded-lg border px-3 py-1"
-            >
-              {loading ? 'Procesando...' : 'Suspender'}
-            </button>
-          </>
-        )}
-      </div>
+      {!puedeIniciar && !puedeFinalizarOSuspender && (
+        <div className="text-sm text-gray-500">Sin acciones disponibles.</div>
+      )}
 
       {error && (
-        <div className="max-w-xs text-xs text-red-600">
+        <div className="rounded-xl border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700">
           {error}
         </div>
       )}

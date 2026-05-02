@@ -1,81 +1,58 @@
-'use client'
+import { login } from './actions'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
+type SearchParams = Promise<{
+  error?: string
+}>
 
-export default function LoginPage() {
-  const router = useRouter()
-  const supabase = createClient()
-
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
-
-  async function handleLogin(e: React.FormEvent) {
-    e.preventDefault()
-    setLoading(true)
-    setError('')
-
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    })
-
-    setLoading(false)
-
-    if (error) {
-      setError(error.message)
-      return
-    }
-
-    router.push('/dashboard')
-    router.refresh()
-  }
+export default async function LoginPage(props: { searchParams: SearchParams }) {
+  const searchParams = await props.searchParams
+  const error = searchParams.error
 
   return (
     <main className="min-h-screen flex items-center justify-center p-6">
       <div className="w-full max-w-md rounded-2xl border p-6 shadow-sm">
         <h1 className="text-2xl font-semibold mb-4">Login</h1>
 
-        <form onSubmit={handleLogin} className="space-y-4">
+        <form className="space-y-4">
           <div>
-            <label className="block text-sm mb-1">Email</label>
+            <label htmlFor="email" className="block text-sm mb-1">
+              Email
+            </label>
             <input
+              id="email"
+              name="email"
               type="email"
-              className="w-full border rounded-lg px-3 py-2"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900"
               autoComplete="email"
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm mb-1">Contraseña</label>
+            <label htmlFor="password" className="block text-sm mb-1">
+              Contraseña
+            </label>
             <input
+              id="password"
+              name="password"
               type="password"
-              className="w-full border rounded-lg px-3 py-2"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900"
               autoComplete="current-password"
               required
             />
           </div>
 
           {error && (
-            <div className="text-sm text-red-600">
+            <div className="rounded-lg border border-red-300 bg-red-50 p-3 text-sm text-red-700">
               {error}
             </div>
           )}
 
           <button
-            type="submit"
-            disabled={loading}
+            formAction={login}
             className="w-full rounded-lg border px-4 py-2"
           >
-            {loading ? 'Ingresando...' : 'Ingresar'}
+            Ingresar
           </button>
         </form>
       </div>
