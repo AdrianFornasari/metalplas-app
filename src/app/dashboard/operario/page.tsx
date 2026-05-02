@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import OperarioMobileBoard from '@/components/operario-mobile-board'
+import InstallPwaButton from '@/components/install-pwa-button'
 
 type Profile = {
   id: string
@@ -99,6 +100,7 @@ export default async function OperarioDashboardPage() {
           <Link href="/dashboard" className="rounded-xl border px-4 py-3">
             Dashboard
           </Link>
+          <InstallPwaButton />
         </div>
       </div>
 

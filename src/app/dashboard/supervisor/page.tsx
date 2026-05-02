@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import SupervisorMobileBoard from '@/components/supervisor-mobile-board'
+import InstallPwaButton from '@/components/install-pwa-button'
 
 type Profile = {
   id: string
@@ -105,6 +106,7 @@ export default async function SupervisorDashboardPage() {
     >
       Dashboard
     </Link>
+    <InstallPwaButton />
   </div>
 </div>
 
