@@ -41,6 +41,7 @@ export default function AsignacionPendientesTable({
   const [seleccion, setSeleccion] = useState<Record<number, string>>({})
   const [loadingId, setLoadingId] = useState<number | null>(null)
   const [errorGlobal, setErrorGlobal] = useState('')
+  const [successGlobal, setSuccessGlobal] = useState('')
   const [soloPendientes, setSoloPendientes] = useState(true)
 
   const personasOptions = useMemo(() => personas ?? [], [personas])
@@ -50,6 +51,12 @@ export default function AsignacionPendientesTable({
     return rows
   }, [rows, soloPendientes])
 
+  function refreshWithDelay() {
+    window.setTimeout(() => {
+      router.refresh()
+    }, 700)
+  }
+
   async function handleAsignar(
     ofOperacionId: number,
     personaNombre: string | undefined
@@ -58,6 +65,7 @@ export default function AsignacionPendientesTable({
 
     if (!personaId) {
       setErrorGlobal('Elegí un operario antes de asignar.')
+      setSuccessGlobal('')
       return
     }
 
@@ -67,6 +75,7 @@ export default function AsignacionPendientesTable({
     if (!ok) return
 
     setErrorGlobal('')
+    setSuccessGlobal('')
     setLoadingId(ofOperacionId)
 
     const { error } = await supabase.rpc('rpc_asignar_of_operacion', {
@@ -81,7 +90,8 @@ export default function AsignacionPendientesTable({
       return
     }
 
-    router.refresh()
+    setSuccessGlobal('Operario asignado correctamente.')
+    refreshWithDelay()
   }
 
   return (
@@ -110,6 +120,12 @@ export default function AsignacionPendientesTable({
           </div>
         </div>
       </div>
+
+      {successGlobal && (
+        <div className="rounded-2xl border border-green-300 bg-green-50 p-4 text-sm text-green-700">
+          {successGlobal}
+        </div>
+      )}
 
       {errorGlobal && (
         <div className="rounded-2xl border border-red-300 bg-red-50 p-4 text-sm text-red-700">

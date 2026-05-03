@@ -18,10 +18,18 @@ export default function OfOperacionActions({
 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
+
+  function refreshWithDelay() {
+    window.setTimeout(() => {
+      router.refresh()
+    }, 700)
+  }
 
   async function handleIniciar() {
     setLoading(true)
     setError('')
+    setSuccess('')
 
     const { error } = await supabase.rpc('rpc_iniciar_of_operacion', {
       p_of_operacion_id: ofOperacionId,
@@ -34,7 +42,8 @@ export default function OfOperacionActions({
       return
     }
 
-    router.refresh()
+    setSuccess('Operación iniciada.')
+    refreshWithDelay()
   }
 
   async function handleFinalizar() {
@@ -43,6 +52,7 @@ export default function OfOperacionActions({
 
     setLoading(true)
     setError('')
+    setSuccess('')
 
     const { error } = await supabase.rpc('rpc_finalizar_of_operacion', {
       p_of_operacion_id: ofOperacionId,
@@ -55,7 +65,8 @@ export default function OfOperacionActions({
       return
     }
 
-    router.refresh()
+    setSuccess('Operación finalizada.')
+    refreshWithDelay()
   }
 
   async function handleSuspender() {
@@ -64,6 +75,7 @@ export default function OfOperacionActions({
 
     setLoading(true)
     setError('')
+    setSuccess('')
 
     const { error } = await supabase.rpc('rpc_suspender_of_operacion', {
       p_of_operacion_id: ofOperacionId,
@@ -77,7 +89,8 @@ export default function OfOperacionActions({
       return
     }
 
-    router.refresh()
+    setSuccess('Operación suspendida.')
+    refreshWithDelay()
   }
 
   const puedeIniciar = estadoCodigo === 2 || estadoCodigo === 5
@@ -117,8 +130,14 @@ export default function OfOperacionActions({
         )}
       </div>
 
+      {success && (
+        <div className="max-w-xs rounded-lg border border-green-300 bg-green-50 px-3 py-2 text-xs text-green-700">
+          {success}
+        </div>
+      )}
+
       {error && (
-        <div className="max-w-xs text-xs text-red-600">
+        <div className="max-w-xs rounded-lg border border-red-300 bg-red-50 px-3 py-2 text-xs text-red-700">
           {error}
         </div>
       )}

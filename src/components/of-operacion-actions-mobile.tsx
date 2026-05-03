@@ -18,10 +18,18 @@ export default function OfOperacionActionsMobile({
 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
+
+  function refreshWithDelay() {
+    window.setTimeout(() => {
+      router.refresh()
+    }, 700)
+  }
 
   async function handleIniciar() {
     setLoading(true)
     setError('')
+    setSuccess('')
 
     const { error } = await supabase.rpc('rpc_iniciar_of_operacion', {
       p_of_operacion_id: ofOperacionId,
@@ -34,7 +42,8 @@ export default function OfOperacionActionsMobile({
       return
     }
 
-    router.refresh()
+    setSuccess('Operación iniciada.')
+    refreshWithDelay()
   }
 
   async function handleFinalizar() {
@@ -43,6 +52,7 @@ export default function OfOperacionActionsMobile({
 
     setLoading(true)
     setError('')
+    setSuccess('')
 
     const { error } = await supabase.rpc('rpc_finalizar_of_operacion', {
       p_of_operacion_id: ofOperacionId,
@@ -55,7 +65,8 @@ export default function OfOperacionActionsMobile({
       return
     }
 
-    router.refresh()
+    setSuccess('Operación finalizada.')
+    refreshWithDelay()
   }
 
   async function handleSuspender() {
@@ -64,6 +75,7 @@ export default function OfOperacionActionsMobile({
 
     setLoading(true)
     setError('')
+    setSuccess('')
 
     const { error } = await supabase.rpc('rpc_suspender_of_operacion', {
       p_of_operacion_id: ofOperacionId,
@@ -77,7 +89,8 @@ export default function OfOperacionActionsMobile({
       return
     }
 
-    router.refresh()
+    setSuccess('Operación suspendida.')
+    refreshWithDelay()
   }
 
   const puedeIniciar = estadoCodigo === 2 || estadoCodigo === 5
@@ -117,6 +130,12 @@ export default function OfOperacionActionsMobile({
 
       {!puedeIniciar && !puedeFinalizarOSuspender && (
         <div className="text-sm text-gray-500">Sin acciones disponibles.</div>
+      )}
+
+      {success && (
+        <div className="rounded-xl border border-green-300 bg-green-50 px-3 py-2 text-sm text-green-700">
+          {success}
+        </div>
       )}
 
       {error && (
