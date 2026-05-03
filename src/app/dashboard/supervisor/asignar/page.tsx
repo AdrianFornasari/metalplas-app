@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import AsignacionPendientesTable from '@/components/asignacion-pendientes-table'
+import LogoutButton from '@/components/logout-button'
 
 type Profile = {
   id: string
@@ -118,17 +119,23 @@ export default async function SupervisorAsignarPage() {
           </p>
         </div>
 
-        <div className="flex gap-3">
+        <div className="flex flex-wrap gap-3">
           <Link
             href="/dashboard/supervisor"
-            className="rounded-xl border px-4 py-3"
-          >
+           className="rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900"
+  >
             Volver al panel
           </Link>
-          <Link href="/" className="rounded-xl border px-4 py-3">
-            Inicio
-          </Link>
-        </div>
+
+  <Link
+    href="/"
+    className="rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900"
+  >
+    Inicio
+  </Link>
+
+  <LogoutButton />
+</div>
       </div>
 
       {rowsError && (

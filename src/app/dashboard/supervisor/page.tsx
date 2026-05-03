@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import SupervisorMobileBoard from '@/components/supervisor-mobile-board'
 import InstallPwaButton from '@/components/install-pwa-button'
+import LogoutButton from '@/components/logout-button'
 
 type Profile = {
   id: string
@@ -93,21 +94,30 @@ export default async function SupervisorDashboardPage() {
     </p>
   </div>
 
-  <div className="flex gap-3">
-    <Link
-      href="/"
-      className="rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900"
-    >
-      Inicio
-    </Link>
-    <Link
-      href="/dashboard"
-      className="rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900"
-    >
-      Dashboard
-    </Link>
-    <InstallPwaButton />
-  </div>
+<div className="flex flex-wrap gap-3">
+  <Link
+    href="/"
+    className="rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900"
+  >
+    Inicio
+  </Link>
+
+  <Link
+    href="/dashboard"
+    className="rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900"
+  >
+    Dashboard
+  </Link>
+
+  <Link
+    href="/dashboard/supervisor/asignar"
+    className="rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900"
+  >
+    Asignar
+  </Link>
+
+  <LogoutButton />
+</div>
 </div>
 
       {rowsError && (

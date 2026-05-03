@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import OperarioMobileBoard from '@/components/operario-mobile-board'
 import InstallPwaButton from '@/components/install-pwa-button'
+import LogoutButton from '@/components/logout-button'
 
 type Profile = {
   id: string
@@ -93,15 +94,23 @@ export default async function OperarioDashboardPage() {
           </p>
         </div>
 
-        <div className="flex gap-3">
-          <Link href="/" className="rounded-xl border px-4 py-3">
-            Inicio
-          </Link>
-          <Link href="/dashboard" className="rounded-xl border px-4 py-3">
-            Dashboard
-          </Link>
-          <InstallPwaButton />
-        </div>
+        <div className="flex flex-wrap gap-3">
+  <Link
+    href="/"
+    className="rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900"
+  >
+    Inicio
+  </Link>
+
+  <Link
+    href="/dashboard"
+    className="rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900"
+  >
+    Dashboard
+  </Link>
+
+  <LogoutButton />
+</div>
       </div>
 
       {rowsError && (
