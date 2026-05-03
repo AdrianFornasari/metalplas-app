@@ -17,4 +17,3 @@ export default function LogoutButton({ label = 'Cerrar sesión' }: Props) {
       </button>
     </form>
   )
-}

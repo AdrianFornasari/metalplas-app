@@ -50,13 +50,21 @@ export default function AsignacionPendientesTable({
     return rows
   }, [rows, soloPendientes])
 
-  async function handleAsignar(ofOperacionId: number) {
+  async function handleAsignar(
+    ofOperacionId: number,
+    personaNombre: string | undefined
+  ) {
     const personaId = seleccion[ofOperacionId]
 
     if (!personaId) {
       setErrorGlobal('Elegí un operario antes de asignar.')
       return
     }
+
+    const ok = window.confirm(
+      `¿Confirmás asignar esta operación a ${personaNombre ?? 'este operario'}?`
+    )
+    if (!ok) return
 
     setErrorGlobal('')
     setLoadingId(ofOperacionId)
@@ -116,91 +124,99 @@ export default function AsignacionPendientesTable({
       )}
 
       <div className="space-y-4">
-        {filteredRows.map((row) => (
-          <article
-            key={row.of_operacion_id}
-            className="rounded-2xl border border-gray-300 bg-white p-4 text-gray-900 shadow-sm"
-          >
-            <div className="flex items-start justify-between gap-3">
-              <div className="min-w-0">
-                <div className="text-base text-gray-700">
-                  OF: <span className="font-semibold text-gray-900">{row.codigo_of}</span>
+        {filteredRows.map((row) => {
+          const personaSeleccionada = personasOptions.find(
+            (p) => String(p.id) === (seleccion[row.of_operacion_id] ?? '')
+          )
+
+          return (
+            <article
+              key={row.of_operacion_id}
+              className="rounded-2xl border border-gray-300 bg-white p-4 text-gray-900 shadow-sm"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <div className="text-base text-gray-700">
+                    OF: <span className="font-semibold text-gray-900">{row.codigo_of}</span>
+                  </div>
+                  <div className="mt-1 text-sm text-gray-700">
+                    Cliente: <span className="font-medium text-gray-900">{row.cliente}</span>
+                  </div>
                 </div>
-                <div className="mt-1 text-sm text-gray-700">
-                  Cliente: <span className="font-medium text-gray-900">{row.cliente}</span>
-                </div>
-              </div>
 
-              <span className="shrink-0 rounded-full border border-gray-300 bg-gray-100 px-3 py-1 text-xs font-medium text-gray-800">
-                {row.estado_nombre}
-              </span>
-            </div>
-
-            <div className="mt-4 space-y-3">
-              <div className="text-sm text-gray-700">
-                Operación número{' '}
-                <span className="font-bold text-gray-900">{row.orden_operacion}</span>
-              </div>
-
-              <div className="text-base font-medium text-gray-900">
-                {row.codigo_operacion} - {row.descripcion_operacion}
-              </div>
-
-              <div className="text-sm text-gray-700">
-                Variante:{' '}
-                <span className="text-gray-900">
-                  {row.codigo_variante
-                    ? `${row.codigo_variante} - ${row.descripcion_variante ?? ''}`
-                    : 'Sin variante'}
+                <span className="shrink-0 rounded-full border border-gray-300 bg-gray-100 px-3 py-1 text-xs font-medium text-gray-800">
+                  {row.estado_nombre}
                 </span>
               </div>
 
-              <div className="text-sm text-gray-700">
-                Asignado a:{' '}
-                <span className="text-gray-900">{row.persona_nombre ?? 'Sin asignar'}</span>
-              </div>
+              <div className="mt-4 space-y-3">
+                <div className="text-sm text-gray-700">
+                  Operación número{' '}
+                  <span className="font-bold text-gray-900">{row.orden_operacion}</span>
+                </div>
 
-              <div>
-                <label className="mb-1 block text-sm font-medium text-gray-900">
-                  Elegir operario
-                </label>
-                <select
-                  className="w-full rounded-xl border border-gray-300 bg-white px-3 py-3 text-base text-gray-900 shadow-sm"
-                  value={seleccion[row.of_operacion_id] ?? ''}
-                  onChange={(e) =>
-                    setSeleccion((prev) => ({
-                      ...prev,
-                      [row.of_operacion_id]: e.target.value,
-                    }))
-                  }
-                >
-                  <option value="" className="bg-white text-gray-900">
-                    Seleccionar...
-                  </option>
-                  {personasOptions.map((persona) => (
-                    <option
-                      key={persona.id}
-                      value={persona.id}
-                      className="bg-white text-gray-900"
-                    >
-                      {persona.nombre} ({persona.codigo_persona})
+                <div className="text-base font-medium text-gray-900">
+                  {row.codigo_operacion} - {row.descripcion_operacion}
+                </div>
+
+                <div className="text-sm text-gray-700">
+                  Variante:{' '}
+                  <span className="text-gray-900">
+                    {row.codigo_variante
+                      ? `${row.codigo_variante} - ${row.descripcion_variante ?? ''}`
+                      : 'Sin variante'}
+                  </span>
+                </div>
+
+                <div className="text-sm text-gray-700">
+                  Asignado a:{' '}
+                  <span className="text-gray-900">{row.persona_nombre ?? 'Sin asignar'}</span>
+                </div>
+
+                <div>
+                  <label className="mb-1 block text-sm font-medium text-gray-900">
+                    Elegir operario
+                  </label>
+                  <select
+                    className="w-full rounded-xl border border-gray-300 bg-white px-3 py-3 text-base text-gray-900 shadow-sm"
+                    value={seleccion[row.of_operacion_id] ?? ''}
+                    onChange={(e) =>
+                      setSeleccion((prev) => ({
+                        ...prev,
+                        [row.of_operacion_id]: e.target.value,
+                      }))
+                    }
+                  >
+                    <option value="" className="bg-white text-gray-900">
+                      Seleccionar...
                     </option>
-                  ))}
-                </select>
-              </div>
+                    {personasOptions.map((persona) => (
+                      <option
+                        key={persona.id}
+                        value={persona.id}
+                        className="bg-white text-gray-900"
+                      >
+                        {persona.nombre} ({persona.codigo_persona})
+                      </option>
+                    ))}
+                  </select>
+                </div>
 
-              <button
-                onClick={() => handleAsignar(row.of_operacion_id)}
-                disabled={loadingId === row.of_operacion_id}
-                className="w-full rounded-xl border border-gray-300 bg-white px-4 py-4 text-base font-medium text-gray-900 active:scale-[0.99]"
-              >
-                {loadingId === row.of_operacion_id
-                  ? 'Asignando...'
-                  : 'Asignar operario'}
-              </button>
-            </div>
-          </article>
-        ))}
+                <button
+                  onClick={() =>
+                    handleAsignar(row.of_operacion_id, personaSeleccionada?.nombre)
+                  }
+                  disabled={loadingId === row.of_operacion_id}
+                  className="w-full rounded-xl border border-gray-300 bg-white px-4 py-4 text-base font-medium text-gray-900 active:scale-[0.99]"
+                >
+                  {loadingId === row.of_operacion_id
+                    ? 'Asignando...'
+                    : 'Asignar operario'}
+                </button>
+              </div>
+            </article>
+          )
+        })}
       </div>
     </section>
   )

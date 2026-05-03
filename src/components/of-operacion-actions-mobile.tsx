@@ -38,6 +38,9 @@ export default function OfOperacionActionsMobile({
   }
 
   async function handleFinalizar() {
+    const ok = window.confirm('¿Confirmás que querés finalizar esta operación?')
+    if (!ok) return
+
     setLoading(true)
     setError('')
 
@@ -56,6 +59,9 @@ export default function OfOperacionActionsMobile({
   }
 
   async function handleSuspender() {
+    const ok = window.confirm('¿Confirmás que querés suspender esta operación?')
+    if (!ok) return
+
     setLoading(true)
     setError('')
 

@@ -18,7 +18,6 @@ export default function OfOperacionActions({
 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [observaciones, setObservaciones] = useState('')
 
   async function handleIniciar() {
     setLoading(true)
@@ -39,6 +38,9 @@ export default function OfOperacionActions({
   }
 
   async function handleFinalizar() {
+    const ok = window.confirm('¿Confirmás que querés finalizar esta operación?')
+    if (!ok) return
+
     setLoading(true)
     setError('')
 
@@ -57,12 +59,15 @@ export default function OfOperacionActions({
   }
 
   async function handleSuspender() {
+    const ok = window.confirm('¿Confirmás que querés suspender esta operación?')
+    if (!ok) return
+
     setLoading(true)
     setError('')
 
     const { error } = await supabase.rpc('rpc_suspender_of_operacion', {
       p_of_operacion_id: ofOperacionId,
-      p_observaciones: observaciones.trim() || null,
+      p_observaciones: null,
     })
 
     setLoading(false)
@@ -72,7 +77,6 @@ export default function OfOperacionActions({
       return
     }
 
-    setObservaciones('')
     router.refresh()
   }
 
@@ -81,17 +85,6 @@ export default function OfOperacionActions({
 
   return (
     <div className="space-y-2">
-      {puedeFinalizarOSuspender && (
-        <textarea
-          className="w-full min-w-[180px] rounded-lg border px-3 py-2 text-xs"
-          rows={2}
-          placeholder="Observaciones para suspender (opcional)"
-          value={observaciones}
-          onChange={(e) => setObservaciones(e.target.value)}
-          disabled={loading}
-        />
-      )}
-
       <div className="flex flex-wrap gap-2">
         {puedeIniciar && (
           <button
