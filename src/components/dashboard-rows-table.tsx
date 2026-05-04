@@ -117,10 +117,16 @@ function ElapsedTimeCell({ row }: { row: PanelRow }) {
   ])
 
   return (
-    <span className={row.estado_codigo === 3 ? 'font-bold text-gray-900' : ''}>
-      {formatDuration(elapsedMs)}
-    </span>
-  )
+  <span
+    className={
+      row.estado_codigo === 3
+        ? 'font-bold text-gray-900'
+        : 'font-medium text-gray-900'
+    }
+  >
+    {formatDuration(elapsedMs)}
+  </span>
+)
 }
 
 export default function DashboardRowsTable({
