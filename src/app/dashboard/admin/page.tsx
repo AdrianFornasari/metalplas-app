@@ -27,6 +27,7 @@ type PanelRow = {
   codigo_persona: string | null
   persona_nombre: string | null
   fecha_inicio: string | null
+  tiempo_acumulado_segundos: number | null
   fecha_fin: string | null
 }
 
@@ -74,7 +75,8 @@ export default async function AdminDashboardPage() {
       codigo_persona,
       persona_nombre,
       fecha_inicio,
-      fecha_fin
+      fecha_fin,
+      tiempo_acumulado_segundos
     `)
     .order('codigo_of', { ascending: true })
     .order('orden_operacion', { ascending: true })

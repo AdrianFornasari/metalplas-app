@@ -15,26 +15,33 @@ type PanelRow = {
   codigo_variante: string | null
   descripcion_variante: string | null
   tiempo_estimado_horas: number | null
+  tiempo_acumulado_segundos: number | null
   estado_codigo: number
   estado_nombre: string
   codigo_persona: string | null
   persona_nombre: string | null
   fecha_inicio: string | null
   fecha_fin: string | null
-  tiempo_acumulado_segundos: number | null
 }
 
 type Props = {
   rows: PanelRow[]
 }
 
+const ESTADOS = [
+  { value: 'todos', label: 'Todos' },
+  { value: '1', label: 'Pendiente' },
+  { value: '2', label: 'Asignada' },
+  { value: '3', label: 'En curso' },
+  { value: '4', label: 'Finalizada' },
+  { value: '5', label: 'Suspendida' },
+]
+
 export default function SupervisorMobileBoard({ rows }: Props) {
   const [soloNoFinalizadas, setSoloNoFinalizadas] = useState(true)
-
-  const filteredRows = useMemo(() => {
-    if (!soloNoFinalizadas) return rows
-    return rows.filter((row) => row.estado_codigo !== 4)
-  }, [rows, soloNoFinalizadas])
+  const [filtroOf, setFiltroOf] = useState('')
+  const [filtroCliente, setFiltroCliente] = useState('')
+  const [filtroEstado, setFiltroEstado] = useState('todos')
 
   const totalNoFinalizadas = useMemo(
     () => rows.filter((row) => row.estado_codigo !== 4).length,
@@ -45,6 +52,36 @@ export default function SupervisorMobileBoard({ rows }: Props) {
     () => rows.filter((row) => row.estado_codigo === 1).length,
     [rows]
   )
+
+  const filteredRows = useMemo(() => {
+    const ofTerm = filtroOf.trim().toLowerCase()
+    const clienteTerm = filtroCliente.trim().toLowerCase()
+
+    return rows.filter((row) => {
+      if (soloNoFinalizadas && row.estado_codigo === 4) return false
+
+      if (filtroEstado !== 'todos' && row.estado_codigo !== Number(filtroEstado)) {
+        return false
+      }
+
+      if (ofTerm && !String(row.codigo_of).toLowerCase().includes(ofTerm)) {
+        return false
+      }
+
+      if (clienteTerm && !row.cliente.toLowerCase().includes(clienteTerm)) {
+        return false
+      }
+
+      return true
+    })
+  }, [rows, soloNoFinalizadas, filtroOf, filtroCliente, filtroEstado])
+
+  function limpiarFiltros() {
+    setFiltroOf('')
+    setFiltroCliente('')
+    setFiltroEstado('todos')
+    setSoloNoFinalizadas(true)
+  }
 
   return (
     <section className="space-y-4">
@@ -78,20 +115,73 @@ export default function SupervisorMobileBoard({ rows }: Props) {
             </div>
           </div>
 
-          <div className="pt-1">
+          <div className="grid grid-cols-1 gap-3">
+            <div>
+              <label className="mb-1 block text-sm font-medium text-gray-900">
+                Buscar OF
+              </label>
+              <input
+                type="text"
+                value={filtroOf}
+                onChange={(e) => setFiltroOf(e.target.value)}
+                placeholder="Ej: 12"
+                className="w-full rounded-xl border border-gray-300 bg-white px-3 py-3 text-base text-gray-900"
+              />
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-gray-900">
+                Buscar cliente
+              </label>
+              <input
+                type="text"
+                value={filtroCliente}
+                onChange={(e) => setFiltroCliente(e.target.value)}
+                placeholder="Ej: Metalplas"
+                className="w-full rounded-xl border border-gray-300 bg-white px-3 py-3 text-base text-gray-900"
+              />
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-gray-900">
+                Estado
+              </label>
+              <select
+                value={filtroEstado}
+                onChange={(e) => setFiltroEstado(e.target.value)}
+                className="w-full rounded-xl border border-gray-300 bg-white px-3 py-3 text-base text-gray-900"
+              >
+                {ESTADOS.map((estado) => (
+                  <option key={estado.value} value={estado.value}>
+                    {estado.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap gap-3 pt-1">
             <Link
               href="/dashboard/supervisor/asignar"
-              className="inline-flex w-full items-center justify-center rounded-xl border border-gray-300 bg-white px-4 py-3 text-base font-medium text-gray-900 sm:w-auto"
+              className="inline-flex items-center justify-center rounded-xl border border-gray-300 bg-white px-4 py-3 text-base font-medium text-gray-900"
             >
               Ir a asignación
             </Link>
+
+            <button
+              type="button"
+              onClick={limpiarFiltros}
+              className="inline-flex items-center justify-center rounded-xl border border-gray-300 bg-white px-4 py-3 text-base font-medium text-gray-900"
+            >
+              Limpiar filtros
+            </button>
           </div>
         </div>
       </div>
 
       {filteredRows.length === 0 && (
         <div className="rounded-2xl border border-gray-300 bg-white p-6 text-center text-gray-500">
-          No hay operaciones visibles.
+          No hay operaciones visibles con esos filtros.
         </div>
       )}
 
