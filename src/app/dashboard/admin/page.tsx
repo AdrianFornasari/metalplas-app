@@ -2,6 +2,8 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import DashboardRowsTable from '@/components/dashboard-rows-table'
+import AdminMobileBoard from '@/components/admin-mobile-board'
+import LogoutButton from '@/components/logout-button'
 
 type Profile = {
   id: string
@@ -22,12 +24,12 @@ type PanelRow = {
   codigo_variante: string | null
   descripcion_variante: string | null
   tiempo_estimado_horas: number | null
+  tiempo_acumulado_segundos: number | null
   estado_codigo: number
   estado_nombre: string
   codigo_persona: string | null
   persona_nombre: string | null
   fecha_inicio: string | null
-  tiempo_acumulado_segundos: number | null
   fecha_fin: string | null
 }
 
@@ -70,63 +72,82 @@ export default async function AdminDashboardPage() {
       codigo_variante,
       descripcion_variante,
       tiempo_estimado_horas,
+      tiempo_acumulado_segundos,
       estado_codigo,
       estado_nombre,
       codigo_persona,
       persona_nombre,
       fecha_inicio,
-      fecha_fin,
-      tiempo_acumulado_segundos
+      fecha_fin
     `)
     .order('codigo_of', { ascending: true })
     .order('orden_operacion', { ascending: true })
     .limit(100)
 
   return (
-    <main className="p-6 space-y-6">
-      <div className="flex items-center justify-between gap-4">
+    <main className="p-4 space-y-4 sm:p-6">
+      <div className="flex flex-col gap-3 rounded-2xl border border-gray-300 bg-white p-4 text-gray-900">
         <div>
-          <h1 className="text-2xl font-semibold">Panel admin</h1>
-          <p className="text-sm text-gray-600">
-            {profile.full_name ?? profile.email} — rol: {profile.role}
+          <h1 className="text-2xl font-semibold text-gray-900">Panel admin</h1>
+          <p className="text-sm text-gray-700">
+            {profile.full_name ?? profile.email}
           </p>
         </div>
 
-        <div className="flex gap-3">
-          <Link href="/" className="rounded-lg border px-4 py-2">
+        <div className="flex flex-wrap gap-3">
+          <Link
+            href="/"
+            className="rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900"
+          >
             Inicio
           </Link>
-          <Link href="/dashboard" className="rounded-lg border px-4 py-2">
+
+          <Link
+            href="/dashboard"
+            className="rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900"
+          >
             Dashboard
           </Link>
+
           <Link
             href="/dashboard/admin/asignar"
-            className="rounded-lg border px-4 py-2"
+            className="rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900"
           >
             Asignar
           </Link>
+
           <Link
             href="/dashboard/admin/of/nueva"
-            className="rounded-lg border px-4 py-2"
+            className="rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900"
           >
             Nueva OF
           </Link>
+
+          <LogoutButton />
         </div>
       </div>
 
       {rowsError && (
-        <div className="rounded-lg border border-red-300 bg-red-50 p-4 text-red-700">
+        <div className="rounded-2xl border border-red-300 bg-red-50 p-4 text-red-700">
           Error cargando datos: {rowsError.message}
         </div>
       )}
 
       {!rowsError && (
-        <DashboardRowsTable
-          rows={(rows as PanelRow[] | null) ?? []}
-          titulo="Operaciones cargadas"
-          mostrarAsignadoA={true}
-          mensajeVacio="No hay datos para mostrar."
-        />
+        <>
+          <div className="lg:hidden">
+            <AdminMobileBoard rows={(rows as PanelRow[] | null) ?? []} />
+          </div>
+
+          <div className="hidden lg:block">
+            <DashboardRowsTable
+              rows={(rows as PanelRow[] | null) ?? []}
+              titulo="Operaciones cargadas"
+              mostrarAsignadoA={true}
+              mensajeVacio="No hay datos para mostrar."
+            />
+          </div>
+        </>
       )}
     </main>
   )
