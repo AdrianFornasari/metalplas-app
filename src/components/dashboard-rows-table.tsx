@@ -320,7 +320,7 @@ export default function DashboardRowsTable({
 
                 <td className="py-2 pr-4 text-gray-900">{formatDateTime(row.fecha_inicio)}</td>
                 <td className="py-2 pr-4 text-gray-900">{formatDateTime(row.fecha_fin)}</td>
-                <td className="py-2 pr-4 text-gray-900">
+                <td className="py-2 pr-4 text-gray-900 bg-white">
                   <ElapsedTimeCell row={row} />
                 </td>
                 <td className="py-2 pr-4 text-gray-900">
