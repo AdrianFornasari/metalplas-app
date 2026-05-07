@@ -116,17 +116,25 @@ function ElapsedTimeCell({ row }: { row: PanelRow }) {
     now,
   ])
 
+  const texto = formatDuration(elapsedMs)
+
+  if (texto === '-') {
+    return <span className="text-gray-500">-</span>
+  }
+
+  if (row.estado_codigo === 3) {
+    return (
+      <span className="inline-flex rounded-lg border border-blue-300 bg-blue-50 px-2 py-1 font-bold text-blue-900">
+        {texto}
+      </span>
+    )
+  }
+
   return (
-  <span
-    className={
-      row.estado_codigo === 3
-        ? 'font-bold text-gray-900'
-        : 'font-medium text-gray-900'
-    }
-  >
-    {formatDuration(elapsedMs)}
-  </span>
-)
+    <span className="inline-flex rounded-lg border border-gray-300 bg-white px-2 py-1 font-semibold text-gray-900">
+      {texto}
+    </span>
+  )
 }
 
 export default function DashboardRowsTable({
@@ -178,12 +186,12 @@ export default function DashboardRowsTable({
   const colSpan = mostrarAsignadoA ? 11 : 10
 
   return (
-    <section className="rounded-2xl border p-4">
+    <section className="rounded-2xl border border-gray-300 bg-white p-4 text-gray-900">
       <div className="mb-4 space-y-4">
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-          <h2 className="text-lg font-semibold">{titulo}</h2>
+          <h2 className="text-lg font-semibold text-gray-900">{titulo}</h2>
 
-          <div className="rounded-full border px-3 py-1 text-sm text-gray-700">
+          <div className="rounded-full border border-gray-300 bg-white px-3 py-1 text-sm text-gray-700">
             {filteredRows.length} visibles
           </div>
         </div>
@@ -251,7 +259,7 @@ export default function DashboardRowsTable({
         </div>
 
         <div className="flex flex-wrap items-center gap-4">
-          <label className="flex items-center gap-2 text-sm">
+          <label className="flex items-center gap-2 text-sm text-gray-900">
             <input
               type="checkbox"
               checked={soloNoFinalizadas}
@@ -268,51 +276,54 @@ export default function DashboardRowsTable({
       </div>
 
       <div className="overflow-x-auto">
-        <table className="min-w-full border-collapse text-sm">
+        <table className="min-w-full border-collapse bg-white text-sm text-gray-900">
           <thead>
-            <tr className="border-b">
-              <th className="text-left py-2 pr-4">OF</th>
-              <th className="text-left py-2 pr-4">Cliente</th>
-              <th className="text-left py-2 pr-4">Orden</th>
-              <th className="text-left py-2 pr-4">Operación</th>
-              <th className="text-left py-2 pr-4">Variante</th>
-              <th className="text-left py-2 pr-4">Estado</th>
+            <tr className="border-b bg-gray-50">
+              <th className="text-left py-2 pr-4 text-gray-900">OF</th>
+              <th className="text-left py-2 pr-4 text-gray-900">Cliente</th>
+              <th className="text-left py-2 pr-4 text-gray-900">Orden</th>
+              <th className="text-left py-2 pr-4 text-gray-900">Operación</th>
+              <th className="text-left py-2 pr-4 text-gray-900">Variante</th>
+              <th className="text-left py-2 pr-4 text-gray-900">Estado</th>
               {mostrarAsignadoA && (
-                <th className="text-left py-2 pr-4">Asignado a</th>
+                <th className="text-left py-2 pr-4 text-gray-900">Asignado a</th>
               )}
-              <th className="text-left py-2 pr-4">Inicio</th>
-              <th className="text-left py-2 pr-4">Fin</th>
-              <th className="text-left py-2 pr-4">Tiempo transcurrido</th>
-              <th className="text-left py-2 pr-4">Acciones</th>
+              <th className="text-left py-2 pr-4 text-gray-900">Inicio</th>
+              <th className="text-left py-2 pr-4 text-gray-900">Fin</th>
+              <th className="text-left py-2 pr-4 text-gray-900">Tiempo transcurrido</th>
+              <th className="text-left py-2 pr-4 text-gray-900">Acciones</th>
             </tr>
           </thead>
 
           <tbody>
             {filteredRows.map((row) => (
-              <tr key={row.of_operacion_id} className="border-b align-top">
-                <td className="py-2 pr-4">{row.codigo_of}</td>
-                <td className="py-2 pr-4">{row.cliente}</td>
-                <td className="py-2 pr-4">{row.orden_operacion}</td>
-                <td className="py-2 pr-4">
+              <tr
+                key={row.of_operacion_id}
+                className="border-b align-top bg-white text-gray-900"
+              >
+                <td className="py-2 pr-4 text-gray-900">{row.codigo_of}</td>
+                <td className="py-2 pr-4 text-gray-900">{row.cliente}</td>
+                <td className="py-2 pr-4 text-gray-900">{row.orden_operacion}</td>
+                <td className="py-2 pr-4 text-gray-900">
                   {row.codigo_operacion} - {row.descripcion_operacion}
                 </td>
-                <td className="py-2 pr-4">
+                <td className="py-2 pr-4 text-gray-900">
                   {row.codigo_variante
                     ? `${row.codigo_variante} - ${row.descripcion_variante ?? ''}`
                     : '-'}
                 </td>
-                <td className="py-2 pr-4">{row.estado_nombre}</td>
+                <td className="py-2 pr-4 text-gray-900">{row.estado_nombre}</td>
 
                 {mostrarAsignadoA && (
-                  <td className="py-2 pr-4">{row.persona_nombre ?? '-'}</td>
+                  <td className="py-2 pr-4 text-gray-900">{row.persona_nombre ?? '-'}</td>
                 )}
 
-                <td className="py-2 pr-4">{formatDateTime(row.fecha_inicio)}</td>
-                <td className="py-2 pr-4">{formatDateTime(row.fecha_fin)}</td>
-                <td className="py-2 pr-4">
+                <td className="py-2 pr-4 text-gray-900">{formatDateTime(row.fecha_inicio)}</td>
+                <td className="py-2 pr-4 text-gray-900">{formatDateTime(row.fecha_fin)}</td>
+                <td className="py-2 pr-4 text-gray-900">
                   <ElapsedTimeCell row={row} />
                 </td>
-                <td className="py-2 pr-4">
+                <td className="py-2 pr-4 text-gray-900">
                   <OfOperacionActions
                     ofOperacionId={row.of_operacion_id}
                     estadoCodigo={row.estado_codigo}
@@ -323,7 +334,10 @@ export default function DashboardRowsTable({
 
             {filteredRows.length === 0 && (
               <tr>
-                <td colSpan={colSpan} className="py-4 text-center text-gray-500">
+                <td
+                  colSpan={colSpan}
+                  className="py-4 text-center text-gray-500"
+                >
                   {mensajeVacio}
                 </td>
               </tr>
