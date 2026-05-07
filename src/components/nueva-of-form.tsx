@@ -54,7 +54,22 @@ export default function NuevaOfForm({
     return map
   }, [operaciones])
 
+  function filaIncompleta(item: ItemForm) {
+    return !item.operacionId || !item.varianteCodigo
+  }
+
   function addItem() {
+    const indiceIncompleto = items.findIndex(filaIncompleta)
+
+    if (indiceIncompleto !== -1) {
+      setError(
+        `Completá operación y variante en la fila ${indiceIncompleto + 1} antes de agregar otra.`
+      )
+      setOk('')
+      return
+    }
+
+    setError('')
     setItems((prev) => [...prev, { operacionId: '', varianteCodigo: '' }])
   }
 
@@ -63,6 +78,7 @@ export default function NuevaOfForm({
   }
 
   function updateItem(index: number, patch: Partial<ItemForm>) {
+    setError('')
     setItems((prev) =>
       prev.map((item, i) => (i === index ? { ...item, ...patch } : item))
     )
@@ -99,6 +115,11 @@ export default function NuevaOfForm({
         setError(`Falta elegir la operación en la fila ${index + 1}.`)
         return
       }
+
+      if (!item.varianteCodigo) {
+        setError(`Falta elegir la variante en la fila ${index + 1}.`)
+        return
+      }
     }
 
     const payload = items.map((item, index) => {
@@ -107,7 +128,7 @@ export default function NuevaOfForm({
       return {
         orden_operacion: index + 1,
         codigo_operacion: operacion?.codigo ?? '',
-        codigo_variante: item.varianteCodigo || null,
+        codigo_variante: item.varianteCodigo,
       }
     })
 
@@ -220,8 +241,8 @@ export default function NuevaOfForm({
                 <div className="grid gap-4 md:grid-cols-2">
                   <div>
                     <label className="block text-sm mb-1">Operación</label>
-                   <select
-					  className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900"
+                    <select
+                      className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900"
                       value={item.operacionId}
                       onChange={(e) =>
                         updateItem(index, {
@@ -249,7 +270,7 @@ export default function NuevaOfForm({
                       }
                       disabled={!item.operacionId}
                     >
-                      <option value="">Sin variante</option>
+                      <option value="">Seleccionar...</option>
                       {variantesDisponibles.map((v) => (
                         <option key={v.id} value={v.codigo}>
                           {v.codigo} - {v.descripcion}
