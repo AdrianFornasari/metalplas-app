@@ -26,6 +26,7 @@ type PanelRow = {
 type Props = {
   row: PanelRow
   mostrarAsignadoA?: boolean
+  mostrarSemaforo?: boolean
 }
 
 function pad(n: number) {
@@ -78,12 +79,55 @@ function estadoClasses(estadoCodigo: number) {
   }
 }
 
+function semaforoStyles(estadoCodigo: number) {
+  switch (estadoCodigo) {
+    case 5:
+      return {
+        wrapper: 'border-l-8 border-l-red-600',
+        badge: 'bg-red-100 text-red-800 border-red-300',
+        label: 'Crítica',
+      }
+    case 3:
+      return {
+        wrapper: 'border-l-8 border-l-blue-600',
+        badge: 'bg-blue-100 text-blue-800 border-blue-300',
+        label: 'En producción',
+      }
+    case 1:
+      return {
+        wrapper: 'border-l-8 border-l-yellow-500',
+        badge: 'bg-yellow-100 text-yellow-800 border-yellow-300',
+        label: 'Pendiente',
+      }
+    case 2:
+      return {
+        wrapper: 'border-l-8 border-l-amber-500',
+        badge: 'bg-amber-100 text-amber-800 border-amber-300',
+        label: 'Asignada',
+      }
+    case 4:
+      return {
+        wrapper: 'border-l-8 border-l-green-600',
+        badge: 'bg-green-100 text-green-800 border-green-300',
+        label: 'Finalizada',
+      }
+    default:
+      return {
+        wrapper: '',
+        badge: 'bg-gray-100 text-gray-800 border-gray-300',
+        label: 'Normal',
+      }
+  }
+}
+
 export default function OfOperacionMobileCard({
   row,
   mostrarAsignadoA = false,
+  mostrarSemaforo = false,
 }: Props) {
   const [mounted, setMounted] = useState(false)
   const [now, setNow] = useState<number | null>(null)
+  const [expanded, setExpanded] = useState(false)
 
   useEffect(() => {
     setMounted(true)
@@ -129,96 +173,140 @@ export default function OfOperacionMobileCard({
     now,
   ])
 
+  const semaforo = semaforoStyles(row.estado_codigo)
+
   return (
-    <article className="rounded-2xl border border-gray-300 bg-white p-4 text-gray-900 shadow-sm">
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <div className="text-base text-gray-700">
-            OF: <span className="font-semibold text-gray-900">{row.codigo_of}</span>
+    <article
+      className={`rounded-2xl border border-gray-300 bg-white text-gray-900 shadow-sm ${
+        mostrarSemaforo ? semaforo.wrapper : ''
+      }`}
+    >
+      <button
+        type="button"
+        onClick={() => setExpanded((v) => !v)}
+        className="w-full rounded-2xl p-3 text-left"
+      >
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            {mostrarSemaforo && (
+              <div className="mb-2">
+                <span
+                  className={`inline-flex rounded-full border px-2.5 py-1 text-[11px] font-semibold ${semaforo.badge}`}
+                >
+                  {semaforo.label}
+                </span>
+              </div>
+            )}
+
+            <div className="text-sm text-gray-700">
+              OF: <span className="font-semibold text-gray-900">{row.codigo_of}</span>
+            </div>
+
+            <div className="mt-1 flex items-start justify-between gap-3">
+              <div className="text-sm text-gray-700">
+                Cliente:{' '}
+                <span className="font-medium text-gray-900">{row.cliente}</span>
+              </div>
+
+              <div className="shrink-0 text-xs font-medium text-gray-500">
+                {expanded ? 'Ocultar' : 'Ver más'}
+              </div>
+            </div>
           </div>
 
-          <div className="mt-1 text-sm text-gray-700">
-            Cliente: <span className="font-medium text-gray-900">{row.cliente}</span>
-          </div>
-        </div>
-
-        <span
-          className={`shrink-0 rounded-full border px-3 py-1 text-xs font-medium ${estadoClasses(
-            row.estado_codigo
-          )}`}
-        >
-          {row.estado_nombre}
-        </span>
-      </div>
-
-      <div className="mt-4 space-y-2">
-        <div className="text-sm text-gray-700">
-          Operación número <span className="font-bold text-gray-900">{row.orden_operacion}</span>
-        </div>
-
-        <div className="text-sm text-gray-700">
-          Variante:{' '}
-          <span className="text-gray-900">
-            {row.codigo_variante
-              ? `${row.codigo_variante} - ${row.descripcion_variante ?? ''}`
-              : 'Sin variante'}
+          <span
+            className={`shrink-0 rounded-full border px-3 py-1 text-xs font-medium ${estadoClasses(
+              row.estado_codigo
+            )}`}
+          >
+            {row.estado_nombre}
           </span>
         </div>
 
-        <div className="text-base font-medium text-gray-900">
+        <div className="mt-3 text-sm font-medium text-gray-900">
           {row.codigo_operacion} - {row.descripcion_operacion}
         </div>
 
-        {mostrarAsignadoA && (
+        <div className="mt-2 flex items-start justify-between gap-3">
           <div className="text-sm text-gray-700">
-            Asignado a:{' '}
-            <span className="text-gray-900">{row.persona_nombre ?? 'Sin asignar'}</span>
+            Operación número{' '}
+            <span className="font-bold text-gray-900">{row.orden_operacion}</span>
           </div>
-        )}
-      </div>
 
-      <div className="mt-4 grid grid-cols-2 gap-4">
-        <div>
-          <div className="text-xs uppercase tracking-wide text-gray-500">Inicio</div>
-          <div className="text-sm font-medium text-gray-900">
-            {formatDateTime(row.fecha_inicio)}
+          <div className="max-w-[55%] text-right text-sm text-gray-700">
+            Variante:{' '}
+            <span className="text-gray-900">
+              {row.codigo_variante
+                ? `${row.codigo_variante} - ${row.descripcion_variante ?? ''}`
+                : 'Sin variante'}
+            </span>
           </div>
         </div>
+      </button>
 
-        <div>
-          <div className="text-xs uppercase tracking-wide text-gray-500">Fin</div>
-          <div className="text-sm font-medium text-gray-900">
-            {formatDateTime(row.fecha_fin)}
-          </div>
-        </div>
-      </div>
+      {expanded && (
+        <>
+          <button
+            type="button"
+            onClick={() => setExpanded(false)}
+            className="w-full border-t border-gray-200 px-3 pb-3 pt-3 text-left"
+          >
+            {mostrarAsignadoA && (
+              <div className="text-sm text-gray-700">
+                Asignado a:{' '}
+                <span className="text-gray-900">{row.persona_nombre ?? 'Sin asignar'}</span>
+              </div>
+            )}
 
-      <div className="mt-4 grid grid-cols-2 gap-4">
-        <div>
-          <div className="text-xs uppercase tracking-wide text-gray-500">
-            Tiempo estimado
-          </div>
-          <div className="text-sm font-medium text-gray-900">
-            {formatEstimatedHours(row.tiempo_estimado_horas)}
-          </div>
-        </div>
+            <div className={`${mostrarAsignadoA ? 'mt-3' : ''} grid grid-cols-2 gap-3`}>
+              <div>
+                <div className="text-xs uppercase tracking-wide text-gray-500">Inicio</div>
+                <div className="text-sm font-medium text-gray-900">
+                  {formatDateTime(row.fecha_inicio)}
+                </div>
+              </div>
 
-        <div>
-          <div className="text-xs uppercase tracking-wide text-gray-500">
-            Tiempo transcurrido
-          </div>
-          <div className="text-lg font-bold text-gray-900">
-            {formatDuration(tiempoTranscurridoMs)}
-          </div>
-        </div>
-      </div>
+              <div>
+                <div className="text-xs uppercase tracking-wide text-gray-500">Fin</div>
+                <div className="text-sm font-medium text-gray-900">
+                  {formatDateTime(row.fecha_fin)}
+                </div>
+              </div>
+            </div>
 
-      <div className="mt-4">
-        <OfOperacionActionsMobile
-          ofOperacionId={row.of_operacion_id}
-          estadoCodigo={row.estado_codigo}
-        />
-      </div>
+            <div className="mt-3 grid grid-cols-2 gap-3">
+              <div>
+                <div className="text-xs uppercase tracking-wide text-gray-500">
+                  Tiempo estimado
+                </div>
+                <div className="text-sm font-medium text-gray-900">
+                  {formatEstimatedHours(row.tiempo_estimado_horas)}
+                </div>
+              </div>
+
+              <div>
+                <div className="text-xs uppercase tracking-wide text-gray-500">
+                  Tiempo transcurrido
+                </div>
+                <div className="text-lg font-bold text-gray-900">
+                  {formatDuration(tiempoTranscurridoMs)}
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-3 text-xs font-medium text-gray-500">
+              Tocar para cerrar
+            </div>
+          </button>
+
+          <div className="border-t border-gray-200 px-3 pb-3 pt-3">
+            <OfOperacionActionsMobile
+              ofOperacionId={row.of_operacion_id}
+              estadoCodigo={row.estado_codigo}
+            />
+          </div>
+        </>
+      )}
     </article>
   )
 }

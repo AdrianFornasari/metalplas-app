@@ -103,7 +103,7 @@ export default function OfOperacionActionsMobile({
           <button
             onClick={handleIniciar}
             disabled={loading}
-            className="w-full rounded-xl border border-emerald-700 bg-emerald-600 px-4 py-4 text-base font-semibold text-white active:scale-[0.99]"
+            className="w-full rounded-xl border border-emerald-700 bg-emerald-600 px-4 py-3 text-base font-semibold text-white active:scale-[0.99]"
           >
             {loading ? 'Procesando...' : 'Iniciar'}
           </button>
@@ -114,7 +114,7 @@ export default function OfOperacionActionsMobile({
             <button
               onClick={() => setPendingAction('suspender')}
               disabled={loading}
-              className="w-full rounded-xl border border-yellow-500 bg-yellow-300 px-4 py-4 text-base font-semibold text-gray-900 active:scale-[0.99]"
+              className="w-full rounded-xl border border-yellow-500 bg-yellow-300 px-4 py-3 text-base font-semibold text-gray-900 active:scale-[0.99]"
             >
               {loading ? 'Procesando...' : 'Suspender'}
             </button>
@@ -122,15 +122,11 @@ export default function OfOperacionActionsMobile({
             <button
               onClick={() => setPendingAction('finalizar')}
               disabled={loading}
-              className="w-full rounded-xl border border-red-700 bg-red-600 px-4 py-4 text-base font-semibold text-white active:scale-[0.99]"
+              className="w-full rounded-xl border border-red-700 bg-red-600 px-4 py-3 text-base font-semibold text-white active:scale-[0.99]"
             >
               {loading ? 'Procesando...' : 'Finalizar'}
             </button>
           </div>
-        )}
-
-        {!puedeIniciar && !puedeFinalizarOSuspender && (
-          <div className="text-sm text-gray-500">Sin acciones disponibles.</div>
         )}
 
         {success && (
