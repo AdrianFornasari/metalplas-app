@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import NuevaOfForm from '@/components/nueva-of-form'
+import LogoutButton from '@/components/logout-button'
 
 type Profile = {
   id: string
@@ -65,33 +66,51 @@ export default async function NuevaOfAdminPage() {
     .order('codigo', { ascending: true })
 
   return (
-    <main className="p-6 space-y-6">
-      <div className="flex items-center justify-between gap-4">
+    <main className="p-4 space-y-4 sm:p-6">
+      <div className="flex flex-col gap-3 rounded-2xl border border-gray-300 bg-white p-4 text-gray-900">
         <div>
-          <h1 className="text-2xl font-semibold">Nueva OF</h1>
-          <p className="text-sm text-gray-600">
-            {profile.full_name ?? profile.email} — rol: {profile.role}
+          <h1 className="text-2xl font-semibold text-gray-900">
+            Nueva orden de fabricación
+          </h1>
+          <p className="text-sm text-gray-700">
+            {profile.full_name ?? profile.email}
           </p>
         </div>
 
-        <div className="flex gap-3">
-          <Link href="/dashboard/admin" className="rounded-lg border px-4 py-2">
-            Volver al panel
-          </Link>
-          <Link href="/" className="rounded-lg border px-4 py-2">
+        <div className="flex flex-wrap gap-3">
+          <Link
+            href="/"
+            className="rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900"
+          >
             Inicio
           </Link>
+
+          <Link
+            href="/dashboard"
+            className="rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900"
+          >
+            Dashboard
+          </Link>
+
+          <Link
+            href="/dashboard/admin"
+            className="rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900"
+          >
+            Volver al panel
+          </Link>
+
+          <LogoutButton />
         </div>
       </div>
 
       {operacionesError && (
-        <div className="rounded-lg border border-red-300 bg-red-50 p-4 text-red-700">
+        <div className="rounded-2xl border border-red-300 bg-red-50 p-4 text-red-700">
           Error cargando operaciones: {operacionesError.message}
         </div>
       )}
 
       {variantesError && (
-        <div className="rounded-lg border border-red-300 bg-red-50 p-4 text-red-700">
+        <div className="rounded-2xl border border-red-300 bg-red-50 p-4 text-red-700">
           Error cargando variantes: {variantesError.message}
         </div>
       )}

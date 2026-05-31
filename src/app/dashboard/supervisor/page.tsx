@@ -2,7 +2,6 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import SupervisorMobileBoard from '@/components/supervisor-mobile-board'
-import InstallPwaButton from '@/components/install-pwa-button'
 import LogoutButton from '@/components/logout-button'
 
 type Profile = {
@@ -24,13 +23,23 @@ type PanelRow = {
   codigo_variante: string | null
   descripcion_variante: string | null
   tiempo_estimado_horas: number | null
+  tiempo_acumulado_segundos: number | null
   estado_codigo: number
   estado_nombre: string
   codigo_persona: string | null
   persona_nombre: string | null
   fecha_inicio: string | null
   fecha_fin: string | null
-  tiempo_acumulado_segundos: number | null
+}
+
+type OperarioOption = {
+  id: number
+  codigo_persona: string
+  nombre: string
+}
+
+type OperarioProfile = {
+  persona_id: number | null
 }
 
 export default async function SupervisorDashboardPage() {
@@ -72,53 +81,78 @@ export default async function SupervisorDashboardPage() {
       codigo_variante,
       descripcion_variante,
       tiempo_estimado_horas,
+      tiempo_acumulado_segundos,
       estado_codigo,
       estado_nombre,
       codigo_persona,
       persona_nombre,
       fecha_inicio,
-      fecha_fin,
-      tiempo_acumulado_segundos
+      fecha_fin
     `)
     .order('codigo_of', { ascending: true })
     .order('orden_operacion', { ascending: true })
     .limit(100)
 
+  const { data: operarioProfiles } = await supabase
+    .from('profiles')
+    .select('persona_id')
+    .eq('role', 'operario')
+    .eq('activo', true)
+
+  let operarios: OperarioOption[] = []
+
+  const personaIds = ((operarioProfiles as OperarioProfile[] | null) ?? [])
+    .map((p) => p.persona_id)
+    .filter((id): id is number => id !== null)
+
+  if (personaIds.length > 0) {
+    const { data } = await supabase
+      .from('personas')
+      .select('id, codigo_persona, nombre')
+      .in('id', personaIds)
+      .eq('activo', true)
+      .order('nombre', { ascending: true })
+
+    operarios = (data as OperarioOption[] | null) ?? []
+  }
+
   return (
     <main className="p-4 space-y-4 sm:p-6">
       <div className="flex flex-col gap-3 rounded-2xl border border-gray-300 bg-white p-4 text-gray-900">
-  <div>
-    <h1 className="text-2xl font-semibold text-gray-900">Panel supervisor</h1>
-    <p className="text-sm text-gray-700">
-      {profile.full_name ?? profile.email}
-    </p>
-  </div>
+        <div>
+          <h1 className="text-2xl font-semibold text-gray-900">
+            Panel supervisor
+          </h1>
+          <p className="text-sm text-gray-700">
+            {profile.full_name ?? profile.email}
+          </p>
+        </div>
 
-<div className="flex flex-wrap gap-3">
-  <Link
-    href="/"
-    className="rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900"
-  >
-    Inicio
-  </Link>
+        <div className="flex flex-wrap gap-3">
+          <Link
+            href="/"
+            className="rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900"
+          >
+            Inicio
+          </Link>
 
-  <Link
-    href="/dashboard"
-    className="rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900"
-  >
-    Dashboard
-  </Link>
+          <Link
+            href="/dashboard"
+            className="rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900"
+          >
+            Dashboard
+          </Link>
 
-  <Link
-    href="/dashboard/supervisor/asignar"
-    className="rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900"
-  >
-    Asignar
-  </Link>
+          <Link
+            href="/dashboard/supervisor/asignar"
+            className="hidden lg:inline-flex rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900"
+          >
+            Asignar
+          </Link>
 
-  <LogoutButton />
-</div>
-</div>
+          <LogoutButton />
+        </div>
+      </div>
 
       {rowsError && (
         <div className="rounded-2xl border border-red-300 bg-red-50 p-4 text-red-700">
@@ -127,7 +161,10 @@ export default async function SupervisorDashboardPage() {
       )}
 
       {!rowsError && (
-        <SupervisorMobileBoard rows={(rows as PanelRow[] | null) ?? []} />
+        <SupervisorMobileBoard
+          rows={(rows as PanelRow[] | null) ?? []}
+          operarios={operarios}
+        />
       )}
     </main>
   )

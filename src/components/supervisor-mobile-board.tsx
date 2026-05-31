@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import OfOperacionMobileCard from '@/components/of-operacion-mobile-card'
+import type { OperarioOption } from '@/components/pending-inline-assignment'
 
 type PanelRow = {
   of_operacion_id: number
@@ -26,6 +27,7 @@ type PanelRow = {
 
 type Props = {
   rows: PanelRow[]
+  operarios: OperarioOption[]
 }
 
 const ESTADOS = [
@@ -37,7 +39,7 @@ const ESTADOS = [
   { value: '5', label: 'Suspendida' },
 ]
 
-export default function SupervisorMobileBoard({ rows }: Props) {
+export default function SupervisorMobileBoard({ rows, operarios }: Props) {
   const [soloNoFinalizadas, setSoloNoFinalizadas] = useState(true)
   const [filtroOf, setFiltroOf] = useState('')
   const [filtroCliente, setFiltroCliente] = useState('')
@@ -148,7 +150,14 @@ export default function SupervisorMobileBoard({ rows }: Props) {
               </label>
               <select
                 value={filtroEstado}
-                onChange={(e) => setFiltroEstado(e.target.value)}
+                onChange={(e) => {
+                  const value = e.target.value
+                  setFiltroEstado(value)
+
+                  if (value === '4') {
+                    setSoloNoFinalizadas(false)
+                  }
+                }}
                 className="w-full rounded-xl border border-gray-300 bg-white px-3 py-3 text-base text-gray-900"
               >
                 {ESTADOS.map((estado) => (
@@ -191,6 +200,8 @@ export default function SupervisorMobileBoard({ rows }: Props) {
             key={row.of_operacion_id}
             row={row}
             mostrarAsignadoA={true}
+            permitirAsignacionInline={true}
+            operariosAsignables={operarios}
           />
         ))}
       </div>

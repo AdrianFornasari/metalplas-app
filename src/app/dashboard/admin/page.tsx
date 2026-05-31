@@ -33,6 +33,16 @@ type PanelRow = {
   fecha_fin: string | null
 }
 
+type OperarioOption = {
+  id: number
+  codigo_persona: string
+  nombre: string
+}
+
+type OperarioProfile = {
+  persona_id: number | null
+}
+
 export default async function AdminDashboardPage() {
   const supabase = await createClient()
 
@@ -84,6 +94,29 @@ export default async function AdminDashboardPage() {
     .order('orden_operacion', { ascending: true })
     .limit(100)
 
+  const { data: operarioProfiles } = await supabase
+    .from('profiles')
+    .select('persona_id')
+    .eq('role', 'operario')
+    .eq('activo', true)
+
+  let operarios: OperarioOption[] = []
+
+  const personaIds = ((operarioProfiles as OperarioProfile[] | null) ?? [])
+    .map((p) => p.persona_id)
+    .filter((id): id is number => id !== null)
+
+  if (personaIds.length > 0) {
+    const { data } = await supabase
+      .from('personas')
+      .select('id, codigo_persona, nombre')
+      .in('id', personaIds)
+      .eq('activo', true)
+      .order('nombre', { ascending: true })
+
+    operarios = (data as OperarioOption[] | null) ?? []
+  }
+
   return (
     <main className="p-4 space-y-4 sm:p-6">
       <div className="flex flex-col gap-3 rounded-2xl border border-gray-300 bg-white p-4 text-gray-900">
@@ -110,10 +143,10 @@ export default async function AdminDashboardPage() {
           </Link>
 
           <Link
-            href="/dashboard/admin/asignar"
-            className="rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900"
-          >
-            Asignar
+           href="/dashboard/admin/asignar"
+            className="hidden lg:inline-flex rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900"
+            >
+           Asignar
           </Link>
 
           <Link
@@ -136,7 +169,10 @@ export default async function AdminDashboardPage() {
       {!rowsError && (
         <>
           <div className="lg:hidden">
-            <AdminMobileBoard rows={(rows as PanelRow[] | null) ?? []} />
+            <AdminMobileBoard
+              rows={(rows as PanelRow[] | null) ?? []}
+              operarios={operarios}
+            />
           </div>
 
           <div className="hidden lg:block">

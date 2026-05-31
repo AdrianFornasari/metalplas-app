@@ -155,27 +155,29 @@ export default function NuevaOfForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-4">
       {error && (
-        <div className="rounded-lg border border-red-300 bg-red-50 p-4 text-red-700">
+        <div className="rounded-2xl border border-red-300 bg-red-50 p-4 text-red-700">
           {error}
         </div>
       )}
 
       {ok && (
-        <div className="rounded-lg border border-green-300 bg-green-50 p-4 text-green-700">
+        <div className="rounded-2xl border border-green-300 bg-green-50 p-4 text-green-700">
           {ok}
         </div>
       )}
 
-      <section className="rounded-2xl border p-4 space-y-4">
-        <h2 className="text-lg font-semibold">Cabecera de OF</h2>
+      <section className="rounded-2xl border border-gray-300 bg-white p-4 space-y-4 text-gray-900">
+        <h2 className="text-lg font-semibold text-gray-900">Cabecera de OF</h2>
 
         <div className="grid gap-4 md:grid-cols-2">
           <div>
-            <label className="block text-sm mb-1">Código OF</label>
+            <label className="mb-1 block text-sm font-medium text-gray-900">
+              Código OF
+            </label>
             <input
-              className="w-full rounded-lg border px-3 py-2"
+              className="w-full rounded-xl border border-gray-300 bg-white px-3 py-3 text-gray-900"
               value={codigo}
               onChange={(e) => setCodigo(e.target.value)}
               placeholder="Ej: OF-2026-001"
@@ -183,9 +185,11 @@ export default function NuevaOfForm({
           </div>
 
           <div>
-            <label className="block text-sm mb-1">Cliente</label>
+            <label className="mb-1 block text-sm font-medium text-gray-900">
+              Cliente
+            </label>
             <input
-              className="w-full rounded-lg border px-3 py-2"
+              className="w-full rounded-xl border border-gray-300 bg-white px-3 py-3 text-gray-900"
               value={cliente}
               onChange={(e) => setCliente(e.target.value)}
               placeholder="Cliente"
@@ -194,9 +198,11 @@ export default function NuevaOfForm({
         </div>
 
         <div>
-          <label className="block text-sm mb-1">Descripción</label>
+          <label className="mb-1 block text-sm font-medium text-gray-900">
+            Descripción
+          </label>
           <textarea
-            className="w-full rounded-lg border px-3 py-2"
+            className="w-full rounded-xl border border-gray-300 bg-white px-3 py-3 text-gray-900"
             rows={3}
             value={descripcion}
             onChange={(e) => setDescripcion(e.target.value)}
@@ -205,14 +211,14 @@ export default function NuevaOfForm({
         </div>
       </section>
 
-      <section className="rounded-2xl border p-4 space-y-4">
+      <section className="rounded-2xl border border-gray-300 bg-white p-4 space-y-4 text-gray-900">
         <div className="flex items-center justify-between gap-4">
-          <h2 className="text-lg font-semibold">Operaciones</h2>
+          <h2 className="text-lg font-semibold text-gray-900">Operaciones</h2>
 
           <button
             type="button"
             onClick={addItem}
-            className="rounded-lg border px-4 py-2"
+            className="rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900"
           >
             Agregar operación
           </button>
@@ -223,15 +229,18 @@ export default function NuevaOfForm({
             const variantesDisponibles = variantesDeOperacion(item.operacionId)
 
             return (
-              <div key={index} className="rounded-xl border p-4 space-y-3">
+              <div
+                key={index}
+                className="rounded-2xl border border-gray-300 bg-gray-50 p-4 space-y-3"
+              >
                 <div className="flex items-center justify-between gap-4">
-                  <h3 className="font-medium">Fila {index + 1}</h3>
+                  <h3 className="font-medium text-gray-900">Fila {index + 1}</h3>
 
                   {items.length > 1 && (
                     <button
                       type="button"
                       onClick={() => removeItem(index)}
-                      className="rounded-lg border px-3 py-1"
+                      className="rounded-xl border border-gray-300 bg-white px-3 py-2 text-gray-900"
                     >
                       Quitar
                     </button>
@@ -240,9 +249,11 @@ export default function NuevaOfForm({
 
                 <div className="grid gap-4 md:grid-cols-2">
                   <div>
-                    <label className="block text-sm mb-1">Operación</label>
+                    <label className="mb-1 block text-sm font-medium text-gray-900">
+                      Operación
+                    </label>
                     <select
-                      className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900"
+                      className="w-full rounded-xl border border-gray-300 bg-white px-3 py-3 text-gray-900"
                       value={item.operacionId}
                       onChange={(e) =>
                         updateItem(index, {
@@ -261,9 +272,11 @@ export default function NuevaOfForm({
                   </div>
 
                   <div>
-                    <label className="block text-sm mb-1">Variante</label>
+                    <label className="mb-1 block text-sm font-medium text-gray-900">
+                      Variante
+                    </label>
                     <select
-                      className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900"
+                      className="w-full rounded-xl border border-gray-300 bg-white px-3 py-3 text-gray-900"
                       value={item.varianteCodigo}
                       onChange={(e) =>
                         updateItem(index, { varianteCodigo: e.target.value })
@@ -288,18 +301,18 @@ export default function NuevaOfForm({
         </div>
       </section>
 
-      <div className="flex gap-3">
+      <div className="flex flex-wrap gap-3">
         <button
           type="submit"
           disabled={loading}
-          className="rounded-lg border px-4 py-2"
+          className="rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900"
         >
           {loading ? 'Creando...' : 'Crear OF'}
         </button>
 
         <button
           type="button"
-          className="rounded-lg border px-4 py-2"
+          className="rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900"
           onClick={() => router.push(`/dashboard/${rolePath}`)}
         >
           Cancelar
