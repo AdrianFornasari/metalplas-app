@@ -1,25 +1,27 @@
 'use client'
 
-type Props = {
+import type { ReactNode } from 'react'
+import { Button } from '@/components/ui/button'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
+
+type ConfirmDialogProps = {
   open: boolean
   title: string
-  message: string
+  message: ReactNode
   confirmLabel?: string
   cancelLabel?: string
-  confirmTone?: 'default' | 'danger' | 'warning'
+  danger?: boolean
   onConfirm: () => void
   onCancel: () => void
-}
-
-function confirmButtonClasses(tone: Props['confirmTone']) {
-  switch (tone) {
-    case 'danger':
-      return 'border-red-700 bg-red-600 text-white'
-    case 'warning':
-      return 'border-yellow-500 bg-yellow-300 text-gray-900'
-    default:
-      return 'border-gray-300 bg-white text-gray-900'
-  }
 }
 
 export default function ConfirmDialog({
@@ -28,37 +30,54 @@ export default function ConfirmDialog({
   message,
   confirmLabel = 'Confirmar',
   cancelLabel = 'Cancelar',
-  confirmTone = 'default',
+  danger = false,
   onConfirm,
   onCancel,
-}: Props) {
-  if (!open) return null
-
+}: ConfirmDialogProps) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="w-full max-w-md rounded-2xl border border-gray-300 bg-white p-5 shadow-xl">
-        <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
+    <AlertDialog
+      open={open}
+      onOpenChange={(nextOpen) => {
+        if (!nextOpen) {
+          onCancel()
+        }
+      }}
+    >
+      <AlertDialogContent className="max-w-[92vw] rounded-2xl sm:max-w-md">
+        <AlertDialogHeader>
+          <AlertDialogTitle className="text-xl text-gray-900">
+            {title}
+          </AlertDialogTitle>
 
-        <p className="mt-2 text-sm text-gray-700">{message}</p>
+          <AlertDialogDescription className="text-base leading-relaxed text-gray-700">
+            {message}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
 
-        <div className="mt-5 flex gap-3">
-          <button
-            type="button"
-            onClick={onCancel}
-            className="flex-1 rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900"
-          >
-            {cancelLabel}
-          </button>
+        <AlertDialogFooter className="gap-3 sm:gap-2">
+          <AlertDialogCancel asChild>
+            <Button
+              type="button"
+              variant="outline"
+              className="min-h-11 text-base"
+              onClick={onCancel}
+            >
+              {cancelLabel}
+            </Button>
+          </AlertDialogCancel>
 
-          <button
-            type="button"
-            onClick={onConfirm}
-            className={`flex-1 rounded-xl border px-4 py-3 font-semibold ${confirmButtonClasses(confirmTone)}`}
-          >
-            {confirmLabel}
-          </button>
-        </div>
-      </div>
-    </div>
+          <AlertDialogAction asChild>
+            <Button
+              type="button"
+              variant={danger ? 'destructive' : 'default'}
+              className="min-h-11 text-base font-semibold"
+              onClick={onConfirm}
+            >
+              {confirmLabel}
+            </Button>
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   )
 }
