@@ -3,6 +3,14 @@
 import { useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { Button } from '@/components/ui/button'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import ConfirmDialog from '@/components/confirm-dialog'
 
 export type OperarioOption = {
@@ -98,13 +106,14 @@ export default function PendingInlineAssignment({
       <div className="mt-4 border-t border-gray-200 pt-4">
         {!abierto && (
           <div className="flex justify-end">
-            <button
+            <Button
               type="button"
+              variant="outline"
               onClick={handleAbrir}
-              className="rounded-xl border border-gray-300 bg-white px-4 py-3 text-base font-bold text-gray-900"
+              className="min-h-12 rounded-xl border-gray-400 bg-white px-4 text-base font-bold text-gray-900 hover:bg-gray-100 hover:text-gray-900"
             >
               Asignar
-            </button>
+            </Button>
           </div>
         )}
 
@@ -114,39 +123,46 @@ export default function PendingInlineAssignment({
               <label className="mb-1 block text-sm font-medium text-gray-900">
                 Elegir operario
               </label>
-              <select
+
+              <Select
                 value={operarioId}
-                onChange={(e) => setOperarioId(e.target.value)}
-                className="w-full rounded-xl border border-gray-300 bg-white px-3 py-3 text-base text-gray-900"
+                onValueChange={setOperarioId}
                 disabled={loading}
               >
-                <option value="">Seleccionar...</option>
-                {operarios.map((operario) => (
-                  <option key={operario.id} value={operario.id}>
-                    {operario.nombre} ({operario.codigo_persona})
-                  </option>
-                ))}
-              </select>
+                <SelectTrigger className="min-h-12 w-full rounded-xl border-gray-300 bg-white text-base text-gray-900">
+                  <SelectValue placeholder="Seleccionar..." />
+                </SelectTrigger>
+
+                <SelectContent>
+                  {operarios.map((operario) => (
+                    <SelectItem key={operario.id} value={String(operario.id)}>
+                      {operario.nombre} ({operario.codigo_persona})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
-              <button
+              <Button
                 type="button"
+                variant="outline"
                 onClick={handleCancelar}
                 disabled={loading}
-                className="rounded-xl border border-gray-300 bg-white px-4 py-3 text-base text-gray-900"
+                className="min-h-12 rounded-xl border-gray-400 bg-white text-base font-medium text-gray-900 hover:bg-gray-100 hover:text-gray-900"
               >
                 Cancelar
-              </button>
+              </Button>
 
-              <button
+              <Button
                 type="button"
+                variant="outline"
                 onClick={handleSolicitarConfirmacion}
                 disabled={loading}
-                className="rounded-xl border border-gray-300 bg-white px-4 py-3 text-base font-bold text-gray-900"
+                className="min-h-12 rounded-xl border-blue-500 bg-blue-100 text-base font-bold text-blue-950 hover:bg-blue-200 hover:text-blue-950"
               >
                 {loading ? 'Asignando...' : 'Confirmar'}
-              </button>
+              </Button>
             </div>
           </div>
         )}
