@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { Button } from '@/components/ui/button'
 import SupervisorMobileBoard from '@/components/supervisor-mobile-board'
 import LogoutButton from '@/components/logout-button'
 
@@ -117,7 +118,7 @@ export default async function SupervisorDashboardPage() {
   }
 
   return (
-    <main className="p-4 space-y-4 sm:p-6">
+    <main className="space-y-4 p-4 sm:p-6">
       <div className="flex flex-col gap-3 rounded-2xl border border-gray-300 bg-white p-4 text-gray-900">
         <div>
           <h1 className="text-2xl font-semibold text-gray-900">
@@ -129,26 +130,29 @@ export default async function SupervisorDashboardPage() {
         </div>
 
         <div className="flex flex-wrap gap-3">
-          <Link
-            href="/"
-            className="rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900"
+          <Button
+            asChild
+            variant="outline"
+            className="min-h-11 rounded-xl border-gray-300 bg-white px-4 text-base font-medium text-gray-900 hover:bg-gray-100 hover:text-gray-900"
           >
-            Inicio
-          </Link>
+            <Link href="/">Inicio</Link>
+          </Button>
 
-          <Link
-            href="/dashboard"
-            className="rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900"
+          <Button
+            asChild
+            variant="outline"
+            className="min-h-11 rounded-xl border-gray-300 bg-white px-4 text-base font-medium text-gray-900 hover:bg-gray-100 hover:text-gray-900"
           >
-            Dashboard
-          </Link>
+            <Link href="/dashboard">Dashboard</Link>
+          </Button>
 
-          <Link
-            href="/dashboard/supervisor/asignar"
-            className="hidden lg:inline-flex rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900"
+          <Button
+            asChild
+            variant="outline"
+            className="hidden min-h-11 rounded-xl border-gray-300 bg-white px-4 text-base font-medium text-gray-900 hover:bg-gray-100 hover:text-gray-900 lg:inline-flex"
           >
-            Asignar
-          </Link>
+            <Link href="/dashboard/supervisor/asignar">Asignar</Link>
+          </Button>
 
           <LogoutButton />
         </div>

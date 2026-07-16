@@ -1,6 +1,7 @@
 'use client'
 
 import { logout } from '@/app/logout/actions'
+import { Button } from '@/components/ui/button'
 
 type Props = {
   label?: string
@@ -9,12 +10,13 @@ type Props = {
 export default function LogoutButton({ label = 'Cerrar sesión' }: Props) {
   return (
     <form action={logout}>
-      <button
+      <Button
         type="submit"
-        className="rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900"
+        variant="outline"
+        className="min-h-11 rounded-xl border-gray-300 bg-white px-4 text-base font-medium text-gray-900 hover:bg-gray-100 hover:text-gray-900"
       >
         {label}
-      </button>
+      </Button>
     </form>
   )
 }
